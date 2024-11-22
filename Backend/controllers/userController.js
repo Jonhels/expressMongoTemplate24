@@ -108,7 +108,7 @@ const logoutUser = (req, res) => {
     res.status(200).json({message: "Logged out successfully"});
 };
 
-const updateUser = async (req, res) => {
+const updateUser = async (req, res, next) => {
     const userId = req.user._id;
     const {name, password} = req.body;
 
@@ -160,12 +160,37 @@ const updateUser = async (req, res) => {
     }
 }
 
-// add logout
+const deleteUser = async (req, res, next) => {
+    const userId = req.user._id;
+
+    try {
+        const deletedUser = await User.findByIdAndDelete(userId);
+
+        if (!deletedUser) {
+            return res.status(404).json({error: "User not found"});
+        }
+
+        res.cookie("token", "", {
+            httpOnly: true, 
+            expires: new Date(0),
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Strict",
+        });
+
+        res.status(200).json({
+            status: "success",
+            message: "User account and data deleted successfully",
+        });
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        next(error);
+    }
+}
 
 module.exports = {
     registerUser,
     loginUser,
     logoutUser,
     updateUser,
-
+    deleteUser
 };
