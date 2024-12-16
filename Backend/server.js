@@ -13,7 +13,7 @@ const templateRoute = require("./routes/templateRoute");
 // const route = require("./routes/route");
 const app = express(); // Create an express app
 app.use(logger("tiny")); // Log http request to the console
-app.use("helmet"()); // Secure the app through different HTTP headers
+app.use(helmet()); // Secure the app through different HTTP headers
 
 // Parse incoming requests to JSON
 app.use(bodyParser.json());
