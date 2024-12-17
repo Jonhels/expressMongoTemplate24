@@ -3,7 +3,6 @@ const User = require("../models/userSchema");
 const createError = require("../utils/createError");
 const {hashPassword, comparePassword} = require("../utils/hashPassword");
 const validator = require("validator");
-const bcrypt = require("bcrypt");
 
 const validateStrongPassword = (password) => {
     return validator.isStrongPassword(password, {

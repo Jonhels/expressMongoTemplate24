@@ -8,7 +8,7 @@ const helmet = require("helmet");
 const cors = require("cors");
 
 // Import routes from the routes folder
-const templateRoute = require("./routes/templateRoute");
+const userRoutes = require("./routes/userRoute");
 
 // const route = require("./routes/route");
 const app = express(); // Create an express app
@@ -47,7 +47,7 @@ app.get("/", (req, res) => {
 });
 
 // Template routes
-app.use("/api", templateRoute);
+app.use("/api/users", userRoutes);
 
 // Shutdown gracefully
 const gracefulShutdown = async () => {
