@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
 const {isEmail} = require("validator");
 
-// Pretend it's sensor data, i like iot
-
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
