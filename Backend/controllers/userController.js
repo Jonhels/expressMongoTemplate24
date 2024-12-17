@@ -5,6 +5,15 @@ const {hashPassword, comparePassword} = require("../utils/hashPassword");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 
+const validateStrongPassword = (password) => {
+    return validator.isStrongPassword(password, {
+        minLength: 6,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 1,
+    });
+};
 
 const registerUser = async(req, res, next) => {
     try{
@@ -18,17 +27,11 @@ const registerUser = async(req, res, next) => {
             return res.status(400).json({error: "Name cannot exceed 50 characters"});
         }
 
-        if (!validator.isStrongPassword(password, {
-            minLength: 6,
-            minLowercase: 1,
-            minUppercase: 1,
-            minNumbers: 1,
-            minSymbols: 1,
-        })) {
-            return res.status(400).json({  
-            error: "Password must be stronger. At least 6 characters, including a number, a symbol, and mixed case letters",    
-            })
-        }
+        if (!validateStrongPassword(password)) {
+            return res.status(400).json({
+                error: "Password must be stronger. At least 6 characters, including a number, a symbol, and mixed case letters",
+            });
+        }        
 
         const exist = await User.findOne({email});
         if(exist) {
@@ -40,7 +43,6 @@ const registerUser = async(req, res, next) => {
             name,
             email,
             password: hashedPassword,
-            role,
         });
 
         const userForResponse = {...newUser._doc};
@@ -115,30 +117,22 @@ const updateUser = async (req, res, next) => {
     const updateData = {}; 
 
     try {
-        if (name && name.trin()) {
+        if (name && name.trim()) {
             if (name.length > 50) {
-                return res.status(400)({error: "Name cannot exceed 50 characters"});
+                return res.status(400).json({error: "Name cannot exceed 50 characters"});
             }
             updateData.name = name.trim();
         }
 
         if (password && password.trim()) {
-            if (
-                !validator.isStrongPassword(password, {
-                    minLength: 6,
-                    minLowercase: 1,
-                    minUppercase: 1,
-                    minNumbers: 1,
-                    minSymbols: 1,
-                })
-            ) {
+            if (!validateStrongPassword(password)) {
                 return res.status(400).json({
                     error: "Password must be stronger. At least 6 characters, including a number, a symbol, and mixed case letters",
                 });
             }
             const hashedPassword = await hashPassword(password);
             updateData.password = hashedPassword;
-        }
+        }        
 
         if (Object.keys(updateData).length === 0) {
             return res.status(400).json({error: "No fields to update"});
